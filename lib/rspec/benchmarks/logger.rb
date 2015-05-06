@@ -28,6 +28,7 @@ module RSpec
       end
 
       def log query
+        return if query.is_a? ActiveSupport::Notifications::Event
         if pause?
           yield
         else
