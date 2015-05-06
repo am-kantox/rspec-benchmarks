@@ -16,7 +16,7 @@ module RSpec
         detect(stack, @base).tap { |h| h && h.merge(type: :based) }
       end
       def local
-        (Kernel.const_defined?('Rails') && detect(stack, Rails.root)).tap do |h|
+        (Kernel.const_defined?('Rails') && detect(stack, ::Rails.root)).tap do |h|
           h && h.merge(type: :local)
         end
       end

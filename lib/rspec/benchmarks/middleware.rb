@@ -8,10 +8,8 @@ module RSpec
       end
 
       def call(env)
-        RSpec::Benchmarks::Logger::Default.reset! if RSpec::Benchmarks::Logger::Default.reset?
-        @app.call(env).tap {
-          puts "==[TIME]==> #{RSpec::Benchmarks::Logger::Default.report}"
-        }
+        # RSpec::Benchmarks::Logger::Default.reset! if RSpec::Benchmarks::Logger::Default.reset?
+        @app.call(env)
       end
     end
 

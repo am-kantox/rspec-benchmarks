@@ -45,13 +45,19 @@ module RSpec
 
                             id =  case query
                                   when NilClass
+                                    # Lexer was unable to parse the query.
+                                    # SHOW XXX XXX
                                     payload[:sql]
                                   when SelectRelation
-                                    "SELECT#{query.select.map{|s| s.owner}.join('|')}"
+                                    "select\##{query.select.map{|s| s.owner}.join('|')}"
                                   when LimitRelation
-                                    "SELECT#{query.rel.select.map{|s| s.owner}.join('|')}"
+                                    "select\##{query.rel.select.map{|s| s.owner}.join('|')}"
+                                  when TableRelation
+                                    query.table
+                                  when AliasRelation
+                                    query.relation.table
                                   else
-                                    puts "==[QRY]==> #{query.inspect}"
+                                    puts "==[QRY::UNK]==> #{query.inspect}"
                                     payload[:sql]
                                   end
                             {
@@ -89,6 +95,7 @@ module RSpec
                                 db: payload[:db_runtime],
                                 view: payload[:view_runtime]
                               },
+                              time: (payload[:db_runtime] || 0) + (payload[:view_runtime] || 0),
                               request: {
                                 status: payload[:status],
                                 format: payload[:format],

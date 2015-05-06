@@ -11,7 +11,7 @@ module RParsec
 class Parser
   include Functors
   include Monad
-  extend Signature
+  extend MethodSignature
   extend DefHelper
   MyMonad = ParserMonad.new
   attr_accessor :name
@@ -467,7 +467,7 @@ end
 # This module provides all out-of-box parser implementations.
 #
 module Parsers
-  extend Signature
+  extend MethodSignature
 
   #
   # A parser that always fails with the given error message.

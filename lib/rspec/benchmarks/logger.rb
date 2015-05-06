@@ -28,25 +28,17 @@ module RSpec
       end
 
       def log query
-        return if query.is_a? ActiveSupport::Notifications::Event
-        if pause?
-          yield
-        else
-          result = nil
-          time = Benchmark.realtime do
-            result = yield
-          end
-          if (qt = QUERY_TYPES.detect { |qt| query =~ qt.last }).nil?
-            queries << { type: :unknown, query: query, time: time }
-          else
-            queries << { type: qt.first, query: query, time: time }
-          end
-          result
-        end
+        return if pause?
+
+        queries << query
       end
 
       def pause= pause
         @pause = pause
+      end
+
+      def pause!
+        pause = true
       end
 
       def pause?
