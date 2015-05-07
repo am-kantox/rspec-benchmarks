@@ -1,8 +1,17 @@
 # Rspec::Benchmarks
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rspec/benchmarks`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem provides benchmarks-on-steroids functionality to rspec. Currently it allows:
 
-TODO: Delete this and the text above, and describe your gem
+* print out summaries on [view, controller, db] access for each rspec example; pitfalls: different rails events show ...hummm... very different times, still trying to configure out wtf (rails developers are definitely anarchists, please refer to _“Anthropology from a Pragmatic Point of View”_ by Immanuel Kant; @john look, Kant is still everywhere, I wonder why we are not called Kant-axe after all.)
+* adopted SQL lexer to build AST based on db queries; it was sexy but I still can’t understand what I have this implemented for (possible application: analysis of heavy queries by their structure)
+* ability to make examples _fail_ unless they are passed in specified timeslice (relative times are used, no dependence on target machine equipment, times are normalized by precalculated value)
+* ability to turn on the full benchmark logging (holy load of statistics.)
+* pickup tests to run from git commit;
+* highly tunable running config.
+
+## Impression
+
+![RSpec::Benchmarks Screenshot](https://github.com/kantox/kantox-flow/wiki/rspec-benchmarks.png)
 
 ## Installation
 
@@ -12,17 +21,11 @@ Add this line to your application's Gemfile:
 gem 'rspec-benchmarks'
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install rspec-benchmarks
-
 ## Usage
 
-TODO: Write usage instructions here
+$ BENCHMARK=true bundle exec rspec `bspec last:5`
+
+I know it’s ugly syntax, but it will execute five last specs added (basing on git history.)
 
 ## Development
 

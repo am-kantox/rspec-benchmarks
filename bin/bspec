@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+
+# *NIX ONLY
+def parse_env_option
+  require 'rbconfig'
+  case RbConfig::CONFIG['target_os']    # => 'linux/darwin/windows'
+  when /linux/, /darwin/
+    # print "Hello #{RbConfig::CONFIG['target_os'].capitalize}er! "
+  else
+    return
+  end
+
+  ENV['BENCHMARK'] = ARGV.first unless ENV['BENCHMARK'] || ARGV.length.zero?
+
+  type, value = ENV['BENCHMARK'].match(/(\w+):?(\S+)?/).captures
+  case type
+  when 'last'
+    # puts "Will run last #{value || 1} rspecs."
+    commits = `git log -100 --pretty=%h`.split /#{$/}/
+    commits.map do |c|
+      `git diff-tree --no-commit-id --name-only -r #{c}`.split /#{$/}/
+    end.flatten.uniq.select do |f|
+      f =~ /\Ar?spec\/(?!help)/
+    end.take (value || 1).to_i
+  end
+end
+
+puts parse_env_option.join(' ')

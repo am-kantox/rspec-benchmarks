@@ -1,3 +1,5 @@
+if ENV['BENCHMARK'] || ENV['⌚']
+
 require 'rspec/benchmarks/version'
 
 require 'rspec/benchmarks/parser/rparsec'
@@ -80,7 +82,7 @@ module RSpec
               [id, sums]
             end.to_h
             #⇒ {"BEGIN"=>{:duration=>0.448338, :db=>0, :controller=>0, :view=>0}, "COMMIT"=>{:duration=>0.309235, :db=>0, :controller=>0, :view=>0},...
-            top = grouped.max_by { |_, v| v[:duration] }.first
+            top = grouped.max_by { |k, v| k =~ /^(select|update|insert|delete|create)/i && v[:duration] || 0 }.first
             collapsed = case grouped.length
             when 1 then grouped
                         else
@@ -91,7 +93,7 @@ module RSpec
                             memo[:view] += q.last[:view] || 0
                             memo
                           end
-                          Hash(:"#{top} +#{grouped.length - 1}" => sums)
+                          Hash(:"+#{grouped.length - 1} #{top}" => sums)
                         end
             [type, collapsed]
           end.to_h.each do |k, v|
@@ -108,3 +110,5 @@ module RSpec
     end
   end
 end
+
+end # ENV['BENCHMARK'] || ENV['⌚']
