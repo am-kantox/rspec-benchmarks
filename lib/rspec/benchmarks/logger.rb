@@ -28,8 +28,9 @@ module RSpec
       end
 
       def log query
-        return if pause?
-
+        return if pause? || query.nil?
+        fail ArgumentError.new("#{query.class} passed to RSpec::Benchmarks::Logger.log instean of Event") \
+          unless query.is_a?(ActiveSupport::Notifications::Event)
         queries << query
       end
 

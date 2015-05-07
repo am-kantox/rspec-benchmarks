@@ -18,10 +18,11 @@ module RSpec
       def self.subscribe
         new.
           subscribe('sql.active_record').
-          subscribe('render_partial.action_view').
+          subscribe('rspec_benchmarks.db_query').
+#          subscribe('render_partial.action_view').
           subscribe('render_template.action_view').
-          subscribe('process_action.action_controller.exception').
-          subscribe('console_logger.message').
+#          subscribe('process_action.action_controller.exception').
+#          subscribe('console_logger.message').
           subscribe('process_action.action_controller')
       end
 
@@ -54,12 +55,11 @@ else
   RSpec::Benchmarks::Notifications.subscribe
 end
 
-# ActiveRecord::ConnectionAdapters::AbstractAdapter.class_eval do
-#   def log_with_rspec_benchmarks(query, *args, &block)
-#     RSpec::Benchmarks::Logger::Default.log(query) do
-#       log_without_rspec_benchmarks(query, *args, &block)
-#     end
-#   end
-#
-#   alias_method_chain :log, :rspec_benchmarks
-# end
+ActiveRecord::ConnectionAdapters::AbstractAdapter.class_eval do
+  def log_with_rspec_benchmarks(query, *args, &block)
+    ActiveSupport::Notifications.instrument('rspec_benchmarks.db_query', sql: query, args: args) do
+      log_without_rspec_benchmarks(query, *args, &block)
+    end
+  end
+  alias_method_chain :log, :rspec_benchmarks
+end

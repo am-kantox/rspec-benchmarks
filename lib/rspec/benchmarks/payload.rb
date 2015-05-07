@@ -3,7 +3,8 @@ module RSpec
     module Payload
       def yo name, payload
         Hashie::Mash.new  case name
-                          when  'sql.active_record'
+                          when  'rspec_benchmarks.db_query', 'sql.active_record'
+                            type = name == 'sql.active_record' ? :sql : :rb_db
                             # @payload={
                             #    :sql=>"SELECT `profiles`.* FROM `profiles`",
                             #    :name=>"Profile Load",
@@ -61,7 +62,7 @@ module RSpec
                                     payload[:sql]
                                   end
                             {
-                              type: :sql,
+                              type: type,
                               id: id,
                               desc: payload[:name],
                               query: { sql: payload[:sql], parsed: query }
@@ -95,7 +96,6 @@ module RSpec
                                 db: payload[:db_runtime],
                                 view: payload[:view_runtime]
                               },
-                              time: (payload[:db_runtime] || 0) + (payload[:view_runtime] || 0),
                               request: {
                                 status: payload[:status],
                                 format: payload[:format],
