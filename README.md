@@ -23,7 +23,7 @@ gem 'rspec-benchmarks'
 
 ## Usage
 
-$ BENCHMARK=true bundle exec rspec `bspec last:5`
+    $ BENCHMARK=true bundle exec rspec `bspec last:5`
 
 I know it’s ugly syntax, but it will execute five last specs added (basing on git history.)
 
