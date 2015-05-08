@@ -54,49 +54,7 @@ module RSpec
 
         RSpec::Benchmarks::Logger::Default.pause!
         RSpec::Benchmarks.report success, "#{'=' * 30} #{'%8.2f' % time.first} ⌚ #{'%7.2f' % time.last} #{'=' * 30}"
-        #⇒ :controller=>[#<Hashie::Mash desc=nil
-        #                                duration=25.041808
-        #                                id="Admin::ProfilesController#index"
-        #                                name="process_action.action_controller"
-        #                                query=nil
-        #                                timing=#<Hashie::Mash db=0.975736 view=19.674158>
-        #                                type=:controller>]
-        result = RSpec::Benchmarks::Logger::Default.queries.
-          map do |q|
-            Hashie::Mash.new([
-              [:name, q.name], [:duration, q.duration],
-              [:type, q.payload.type], [:id, q.payload.id],
-              [:desc, q.payload.desc], [:query, q.payload.query],
-              [:timing, q.payload.timing || {}]
-            ].to_h)
-          end.
-          group_by(&:type).map do |type, qs|
-            grouped = qs.group_by(&:id).map do |id, qs|
-              sums = qs.inject(duration: 0, db: 0, controller: 0, view: 0) do |memo, q|
-                memo[:duration] += q[:duration] || 0
-                memo[:db] += q[:timing][:db] || 0
-                memo[:controller] += q[:timing][:controller] || 0
-                memo[:view] += q[:timing][:view] || 0
-                memo
-              end
-              [id, sums]
-            end.to_h
-            #⇒ {"BEGIN"=>{:duration=>0.448338, :db=>0, :controller=>0, :view=>0}, "COMMIT"=>{:duration=>0.309235, :db=>0, :controller=>0, :view=>0},...
-            top = grouped.max_by { |k, v| k =~ /^(select|update|insert|delete|create)/i && v[:duration] || 0 }.first
-            collapsed = case grouped.length
-            when 1 then grouped
-                        else
-                          sums = grouped.inject(duration: 0, db: 0, controller: 0, view: 0) do |memo, q|
-                            memo[:duration] += q.last[:duration] || 0
-                            memo[:db] += q.last[:db] || 0
-                            memo[:controller] += q.last[:controller] || 0
-                            memo[:view] += q.last[:view] || 0
-                            memo
-                          end
-                          Hash(:"+#{grouped.length - 1} #{top}" => sums)
-                        end
-            [type, collapsed]
-          end.to_h.each do |k, v|
+        result = RSpec::Benchmarks::Logger::Default.report.each do |k, v|
             # {
             #   :sql=>{:"ROLLBACK +40"=>{:duration=>32.775403, :db=>0, :controller=>0, :view=>0}},
             #   :rb_db=>{:"SAVEPOINT +40"=>{:duration=>254.559984, :db=>0, :controller=>0, :view=>0}},

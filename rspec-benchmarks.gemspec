@@ -13,9 +13,9 @@ Gem::Specification.new do |spec|
   spec.description   = 'This gem provides different measures for rspec tests: amount of queries per example, execution time etc.'
   spec.homepage      = 'http://kantox.com'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(/^(test|spec|features)\//) }
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(test|spec|features)/}) }
   spec.bindir        = 'bin'
-  spec.executables   = spec.files.grep(/^bin\//) { |f| File.basename(f) }
+  spec.executables   = spec.files.grep(%r{\Abin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
   if spec.respond_to?(:metadata)
@@ -28,4 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hashie', '~> 3.3'
   spec.add_dependency 'rspec-rails', '~> 2.14'
   spec.add_dependency 'rspec-expectations', '~> 2.14'
+
+  spec.requirements << "gem 'kungfuig', git: 'git://github.com/am-kantox/kungfuig.git'"
 end
